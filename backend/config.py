@@ -12,7 +12,9 @@ class Config:
         'brightness',
         'contrast',
         'flip',
+        'gaussian_blur',
         'grayscale',
+        'rgb_order',
         'rotate',
     ]
 

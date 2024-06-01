@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 
 from config import Config
 from utilities import upload_image
-from actions import brightness, flip, rotate
+from actions import brightness, contrast, flip, gaussian_blur, grayscale, rgb_order, rotate, scale
 
 app = Flask(__name__)
 
@@ -30,10 +30,10 @@ def handele_upload():
 # Process the uploaded file
 # Input: filename, action-value
 # Output: Processed image file
-# Example: http://localhost:5000/process?filename=sample.jpg&rotate=90&brightness=50
-# Supported actions: rotate, flip, grayscale, blur, brightness, contrast
+# Example: http://localhost:5000/process?filename=sample.jpg&rotate=23&flip=1&brightness=50
+# Supported actions: look at config.py
 @ app.route('/process', methods=['GET'])
-def process_file():
+def process_image():
     filename = request.args.get('filename')
     if not filename:
         return jsonify({'error': 'Filename is required'})
@@ -48,6 +48,16 @@ def process_file():
     if not os.path.exists(file_path):
         return jsonify({'error': 'File not found', 'file': file_path})
 
+    # file not exist in processed folder
+    processed_folder_path = app.config['FOLDER_PROCESSED_IMAGES']
+    if not os.path.exists(processed_folder_path):
+        os.makedirs(processed_folder_path)
+
+    # copy file to processed folder
+    processed_file_path = os.path.join(
+        processed_folder_path, filename)
+    os.system(f'cp {file_path} {processed_file_path}')
+
     actions = {action: request.args.get(action)
                for action in app.config['SUPPORTED_ACTIONS']}
 
@@ -57,11 +67,29 @@ def process_file():
     for action, value in actions.items():
         if value:
             if action == 'brightness':
+                #  value: 0 to 100
                 image_path = brightness(image_path, int(value))
+            elif action == 'contrast':
+                #  value: 0 to 100
+                image_path = contrast(image_path, int(value))
             elif action == 'flip':
+                #  value: 0 - Vertical, 1 - Horizontal
                 image_path = flip(image_path, int(value))
+            elif action == 'gaussian_blur':
+                #  value: kernel size: 3, 5, 7, 9, 11 ...
+                image_path = gaussian_blur(image_path, int(value))
+            elif action == 'grayscale':
+                #  value: 0 - Red, 1 - Green, 2 - Blue
+                image_path = grayscale(image_path, int(value))
+            elif action == 'rgb_order':
+                #  value: RGB, BGR, BRG, GBR, GRB, RBG
+                image_path = rgb_order(image_path, value)
             elif action == 'rotate':
+                #  value: angle in degrees
                 image_path = rotate(image_path, int(value))
+            elif scale == 'scale':
+                #  value: scale factor: 0.1, 0.5, 1, 2, 5 ...
+                image_path = scale(image_path, float(value))
 
     return send_from_directory(app.config['FOLDER_PROCESSED_IMAGES'], os.path.basename(image_path))
 

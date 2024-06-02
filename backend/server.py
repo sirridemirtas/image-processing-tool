@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 from config import Config
 from utilities import download_image, upload_image
-from actions import brightness, contrast, flip, gaussian_blur, grayscale, rgb_order, rotate, scale
+from actions import brightness, contrast, flip, gaussian_blur, grayscale, rgb_order, rotate
 
 app = Flask(__name__)
 
@@ -97,9 +97,6 @@ def process_image():
                 elif action == 'rotate':
                     #  value: angle in degrees
                     image_path = rotate(image_path, int(value))
-                elif action == 'scale':
-                    #  value: scale factor: 0.1, 0.5, 1, 2, 5 ...
-                    image_path = scale(image_path, float(value))
 
     return send_from_directory(app.config['FOLDER_PROCESSED_IMAGES'], os.path.basename(image_path))
 

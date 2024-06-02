@@ -3,8 +3,10 @@ import cv2
 
 def flip(image_path, flip_code):
     '''
-    flip_code: 0: x ekseninde simetri, 1: y ekseninde simetri, -1: hem x hem y ekseninde simetri
+    flip_code: h: x ekseninde simetri, v: y ekseninde simetri, b: hem x hem y ekseninde simetri
     '''
+
+    flip_code = 1 if flip_code == 'h' else 0 if flip_code == 'v' else -1
 
     # Resmi oku
     image = cv2.imread(image_path)

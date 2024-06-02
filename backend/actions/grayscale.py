@@ -1,7 +1,7 @@
 from PIL import Image
 
 
-def grayscale(image_path, band=0):
+def grayscale(image_path, band='r'):
     '''
     Convert image to grayscale
     band: 0 - Red, 1 - Green, 2 - Blue
@@ -10,12 +10,12 @@ def grayscale(image_path, band=0):
     image = Image.open(image_path)
     image = image.convert('RGB')
 
-    if band == 0:
+    if band == 'r':
         image = image.convert('L')
-    elif band == 1:
+    elif band == 'g':
         r, g, b = image.split()
         image = g
-    elif band == 2:
+    elif band == 'b':
         r, g, b = image.split()
         image = b
 
